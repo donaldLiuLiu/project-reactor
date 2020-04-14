@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class FutureCall {
 
     //Future
-    public Future<String> futureCall(int start, int count) {
+    public void futureCall(int start, int count) throws Exception {
         ExecutorService executor = new ThreadPoolExecutor(1, 1,
                 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
         Future<String> future = executor.submit(() -> {
@@ -23,12 +23,53 @@ public class FutureCall {
             System.out.println(executor);
             return result;
         });
-        return future;
+
+        System.out.println("future ...");
+        String result = future.get();  //wait for completion
+        System.out.println(result);
     }
 
-    //TODO CompletableFuture
+    //CompletableFuture
+    public void completableFuture() {
 
+        ExecutorService executor = new ThreadPoolExecutor(1, 1,
+                10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+        CompletableFuture<String> completeFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("任务运行的线程: " + Thread.currentThread().getName());
+            return "result ...";
+        }, executor);
 
+        System.out.println("主线程: " + Thread.currentThread().getName());
+        //System.out.println(cf2.get());  //wait for completion
+        //executor.shutdown();
+
+        completeFuture.whenCompleteAsync((result, error) -> {
+            System.out.println("whenComplete运行线程: " + Thread.currentThread().getName());
+            System.out.println("error输出: " + error);
+            System.out.println("result输出: " + result);
+
+            executor.shutdown();
+        });
+
+        CompletableFuture<String> anotherFuture = completeFuture.thenCompose(s -> CompletableFuture.supplyAsync(() -> {
+            System.out.println("before run: " + s);
+            return "another run ...";
+        }));
+        anotherFuture.whenCompleteAsync((rs, ee) -> {
+            System.out.println("another whenComplete run");
+            System.out.println(ee);
+            System.out.println(rs);
+        });
+
+        System.out.println("主线程结束... ");
+    }
+
+    //stream
     public void stream() {
         List<String> list = new ArrayList<>();
         list.add("123");
@@ -53,7 +94,7 @@ public class FutureCall {
 
 
     //并行流：内部开多个线程处理
-    public void parrallelStream() {
+    public void parallelStream() {
         List<List<Integer>> listOne = new ArrayList<>();
         listOne.add(Arrays.asList(1, 2));
         listOne.add(Arrays.asList(3, 4));
@@ -86,14 +127,15 @@ public class FutureCall {
     public static void main(String argv[]) throws Exception {
         FutureCall futureCall = new FutureCall();
 
-        /*Future<String> future = futureCall.futureCall(1, 10);
-        System.out.println("future ...");
-        String result = future.get();
-        System.out.println(result);*/
+        //futureCall.stream();
 
-        //futureCall.parrallelStream();
+        //futureCall.futureCall(1, 10);
 
-        futureCall.stream();
+        //futureCall.parallelStream();
+
+        futureCall.completableFuture();
+
+
     }
 
 }

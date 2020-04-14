@@ -1,14 +1,21 @@
 package com.sc.reactor.async;
 
+import com.sun.javafx.collections.MappingChange;
+import com.sun.xml.internal.ws.util.CompletedFuture;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+import reactor.core.publisher.DirectProcessor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.GroupedFlux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -155,6 +162,8 @@ public class ReactorCall {
                 sink.next(data + ",(create)again,threadId: " + Thread.currentThread().getId());
             });
         });
+
+        flux.subscribe(d -> System.out.println("new: " + d));
 
         flux.map(val -> {
             System.out.println("map run(create): " + val + ",(map)threadId-"+Thread.currentThread().getId());
@@ -341,6 +350,64 @@ public class ReactorCall {
 
     }
 
+    public void hotGenerate() {
+        DirectProcessor<String> dp = DirectProcessor.create();
+        Flux<String> flux = dp.map(String::toUpperCase);
+
+        flux.subscribe(d -> System.out.println("Subscriber 1 to Hot Source: "+d));
+
+        dp.onNext("blue");
+        dp.onNext("green");
+
+        //此时订阅，将只能收到此处之后的数据
+        flux.subscribe(d -> System.out.println("Subscriber 2 to Hot Source: "+d));
+
+        dp.onNext("orange");
+        dp.onNext("purple");
+        dp.onComplete();
+
+    }
+
+    public void buffer() {
+
+        Flux<List<Integer>> result =
+                Flux.range(1, 10)
+                        .buffer(5, 3);
+
+        result.subscribe(s -> System.out.println(s));
+
+    }
+
+    public void parallel() {
+
+        Flux.range(1, 10)
+                .parallel(2)
+                .runOn(Schedulers.parallel())
+                .subscribe(i -> System.out.println(Thread.currentThread().getName() + " -> " + i));
+
+    }
+
+    public void other() {
+
+        //fromRunnable
+        Mono<Object> result = Mono.fromRunnable(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(-1);
+        });
+        result.subscribe(d -> System.out.println(d));
+
+        //fromFuture
+        CompletableFuture<String> completeFuture = CompletableFuture.supplyAsync(() -> {
+            return "1";
+        });
+        Mono<String> mono = Mono.fromFuture(completeFuture);
+        mono.subscribe(d -> System.out.println(d));
+
+    }
 
     public static void main(String argv[]) {
         ReactorCall reactorCall = new ReactorCall();
@@ -365,6 +432,11 @@ public class ReactorCall {
 
         //reactorCall.subscribeOn();
 
+        //reactorCall.hotGenerate();
+
+        //reactorCall.parallel();
+
+        reactorCall.other();
 
     }
 
