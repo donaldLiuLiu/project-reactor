@@ -1,19 +1,14 @@
 package com.sc.reactor.async;
 
-import com.sun.javafx.collections.MappingChange;
-import com.sun.xml.internal.ws.util.CompletedFuture;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import reactor.core.publisher.DirectProcessor;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.GroupedFlux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,6 +18,7 @@ public class ReactorCall {
 
     public void flux() {
         //Flux序列数据流过程调试
+        //non-blocking and functional api
         Flux<Object> flux = Flux.just("one", 1, 2L, Arrays.asList(1, 2));
 
         flux.map(val -> {
@@ -38,20 +34,11 @@ public class ReactorCall {
             subscription.request(Long.MAX_VALUE);
         });
 
-        /*flux.subscribe(perValue -> {
-            System.out.println("onNext: " + perValue + ", threadId: " + Thread.currentThread().getId());
-        }, error -> {
-            System.out.println("onError: " + error);
-        }, () -> {
-            System.out.println("onComplete");
-        }, subscription -> {
-            subscription.request(Long.MAX_VALUE);
-        });*/
         System.out.println("main current thread: " + Thread.currentThread().getId());
-
     }
 
     public void request() {
+        //subscribe的接口式写法
         Flux<Integer> intFlux = Flux.range(1, 10000);
 
         intFlux.map(val -> {
@@ -64,29 +51,23 @@ public class ReactorCall {
                 this.subscription = subscription;
                 subscription.request(Long.MAX_VALUE);
             }
-
             @Override
             public void onNext(Integer o) {
                 subscription.request(10);
                 System.out.println("onNext: " + o + ", current thread: " + Thread.currentThread().getId());
             }
-
             @Override
-            public void onError(Throwable throwable) {
-
-            }
-
+            public void onError(Throwable throwable) { }
             @Override
-            public void onComplete() {
-
-            }
+            public void onComplete() { }
         });
-        System.out.println("main current thread: " + Thread.currentThread().getId());
 
+        System.out.println("main current thread: " + Thread.currentThread().getId());
     }
 
 
     public void generate() {
+        //通过generate生成序列
         Flux<String> flux = Flux.generate(AtomicLong::new, (state, sink) -> {
             long s = state.getAndIncrement();
             System.out.println("current state: " + s + ", current thread: " + Thread.currentThread().getId());
@@ -118,6 +99,7 @@ public class ReactorCall {
     }
 
     public void generateThread() {
+        //在generate中SynchronousSink.next()调试
         Flux<String> flux = Flux.generate(AtomicLong::new, (state, sink) -> {
             long s = state.getAndIncrement();
             new Thread(() -> {
@@ -282,6 +264,8 @@ public class ReactorCall {
         dataList.add("publishOn-2");
         dataList.add("publishOn-3");
 
+        //publishOn调用将使后续api调用切换线程执行
+        //non-blocking functional and async api
         Flux<String> flux = Flux.create(sink -> {
             //Runnable run = (() -> {
                 dataList.forEach(data -> {
@@ -309,7 +293,6 @@ public class ReactorCall {
         });
 
         System.out.println("main threadId: " + Thread.currentThread().getId());
-
     }
 
     public void subscribeOn() {
@@ -319,14 +302,12 @@ public class ReactorCall {
         dataList.add("subscribeOn-2");
         dataList.add("subscribeOn-3");
 
+        //subscribeOn调用将整个序列的执行切换到线程上去
+        //non-blocking functional and async api
         Flux<String> flux = Flux.create(sink -> {
-            //Runnable run = (() -> {
-                dataList.forEach(data -> {
-                    sink.next(data + ",(subscribeOn)threadId: " + Thread.currentThread().getId());
-                });
-            //});
-            //new Thread(run).start();
-            //new Thread(run).start();
+            dataList.forEach(data -> {
+                sink.next(data + ",(subscribeOn)threadId: " + Thread.currentThread().getId());
+            });
         });
 
         flux.subscribeOn(s).map(val -> {
@@ -346,8 +327,6 @@ public class ReactorCall {
         });
 
         System.out.println("main threadId: " + Thread.currentThread().getId());
-
-
     }
 
     public void hotGenerate() {
@@ -436,7 +415,7 @@ public class ReactorCall {
 
         //reactorCall.parallel();
 
-        reactorCall.other();
+        //reactorCall.other();
 
     }
 
