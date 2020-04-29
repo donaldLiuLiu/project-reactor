@@ -1,4 +1,4 @@
-package com.sc.reactor.concurrent.parallel;
+package com.sc.reactor.functional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -175,7 +175,7 @@ public class DishEat {
     }
 
     /** //无状态 顺序 并行
-     * @see com.sc.reactor.concurrent.parallel.ParallelCall
+     * @see ParallelCall
      *
      */
 

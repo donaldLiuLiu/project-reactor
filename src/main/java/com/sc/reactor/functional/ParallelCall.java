@@ -1,4 +1,4 @@
-package com.sc.reactor.concurrent.parallel;
+package com.sc.reactor.functional;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
