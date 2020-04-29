@@ -1,4 +1,4 @@
-package com.sc.reactor.async;
+package com.sc.reactor.concurrent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,7 +36,7 @@ public class Callback {
         callback.callbackSync(1, 10, k -> System.out.println(k));
         System.out.println("sync ...");
         callback.callbackAsync(1, 10, k -> System.out.println(k));
-        System.out.println("async ...");
+        System.out.println("concurrent ...");
 
     }
 }

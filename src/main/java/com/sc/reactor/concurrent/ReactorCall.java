@@ -1,4 +1,4 @@
-package com.sc.reactor.async;
+package com.sc.reactor.concurrent;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -265,7 +265,7 @@ public class ReactorCall {
         dataList.add("publishOn-3");
 
         //publishOn调用将使后续api调用切换线程执行
-        //non-blocking functional and async api
+        //non-blocking functional and concurrent api
         Flux<String> flux = Flux.create(sink -> {
             //Runnable run = (() -> {
                 dataList.forEach(data -> {
@@ -303,7 +303,7 @@ public class ReactorCall {
         dataList.add("subscribeOn-3");
 
         //subscribeOn调用将整个序列的执行切换到线程上去
-        //non-blocking functional and async api
+        //non-blocking functional and concurrent api
         Flux<String> flux = Flux.create(sink -> {
             dataList.forEach(data -> {
                 sink.next(data + ",(subscribeOn)threadId: " + Thread.currentThread().getId());
