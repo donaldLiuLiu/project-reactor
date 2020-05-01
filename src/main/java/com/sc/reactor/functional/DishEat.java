@@ -1,11 +1,14 @@
 package com.sc.reactor.functional;
 
 import java.util.*;
+import java.util.function.DoubleFunction;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class DishEat {
+public class DishEat<multi100> {
 
     public static List<Dish> menu() {
         List<Dish> menu = Arrays.asList(
@@ -179,6 +182,7 @@ public class DishEat {
      *
      */
 
+    //Optional
     public static Dish defaultDish() {
         return Dish.builder().name("chicken").calories(800).vegetarian(false).type(Dish.Type.MEAT).build();
     }
@@ -215,6 +219,15 @@ public class DishEat {
 
 
     }
+
+
+    //使用变量保存lambda
+    public final static DoubleFunction multi100 = x -> x*100;
+    //方法返回lambda
+    public final static DoubleUnaryOperator curriedConverter(double f, double b) {
+        return x -> x * f + b;
+    }
+
 
     public static void main(String argv[]) {
         //filter();
