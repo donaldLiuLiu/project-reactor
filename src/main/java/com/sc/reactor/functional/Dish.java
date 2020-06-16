@@ -20,6 +20,10 @@ public class Dish {
     public Dish() {
     }
 
+    public static int compareByName(Dish o1, Dish o2) {
+        return o1.getName().compareTo(o2.getName());
+    }
+
     public String getName() {
         return name;
     }

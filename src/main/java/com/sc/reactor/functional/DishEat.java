@@ -16,7 +16,7 @@ public class DishEat<multi100> {
                 Dish.builder().name("beef").calories(700).vegetarian(false).type(Dish.Type.MEAT).build(),
                 Dish.builder().name("chicken").calories(400).vegetarian(false).type(Dish.Type.MEAT).build(),
                 Dish.builder().name("french fries").calories(530).vegetarian(false).type(Dish.Type.OTHER).build(),
-                Dish.builder().name("rice").calories(350).vegetarian(true).type(Dish.Type.MEAT).build(),
+                Dish.builder().name("rice").calories(300).vegetarian(true).type(Dish.Type.MEAT).build(),
                 Dish.builder().name("season fruit").calories(120).vegetarian(true).type(Dish.Type.OTHER).build(),
                 Dish.builder().name("pizza").calories(550).vegetarian(true).type(Dish.Type.OTHER).build(),
                 Dish.builder().name("prawns").calories(300).vegetarian(false).type(Dish.Type.FISH).build(),
@@ -36,6 +36,25 @@ public class DishEat<multi100> {
                 .limit(2)
                 .collect(Collectors.toList());
         result.stream().forEach(System.out::println);
+    }
+
+    //sort
+    public static void sort() {
+        List<Dish> menu = menu();
+        menu.sort(Dish::compareByName);
+
+        //Comparator.comparing(...)
+        menu.stream().sorted(Comparator.comparing(Dish::getName)); //menu.stream().sorted(Comparator.comparing(Dish::getName, String::compareTo));
+
+        //thenComparing
+        menu.stream().sorted(Comparator.comparing(Dish::getCalories).thenComparing(Dish::getName));
+
+        //reverseOrder():返回倒序Comparator
+        menu.stream().sorted(Comparator.comparing(Dish::getName, Comparator.reverseOrder()));
+
+        //reversed(): 返回Comparator的倒序装饰 （优先）
+        menu.stream().sorted(Comparator.comparing(Dish::getName).reversed());
+
     }
 
     //map flatMap
@@ -243,5 +262,6 @@ public class DishEat<multi100> {
 
         //optiaonl();
 
+        sort();
     }
 }
