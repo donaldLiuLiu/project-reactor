@@ -59,7 +59,7 @@ public class DishEat<multi100> {
 
     //map flatMap
     public static void map() {
-        //map flatMap
+        //map:流中元素操作 flatMap:生成一个新的流
         String[] strings = new String[]{"Goodbye", "world"};
         Stream<String> words = Arrays.stream(strings);
         List<String> rs = words
