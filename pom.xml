@@ -8,7 +8,7 @@
         <groupId>com.sc</groupId>
         <artifactId>common-parent</artifactId>
         <version>1.0</version>
-        <relativePath />
+        <relativePath/>
     </parent>
     <groupId>com.sc</groupId>
     <artifactId>project-reactor</artifactId>
@@ -18,34 +18,35 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-      <skipTests>true</skipTests>
+        <skipTests>true</skipTests>
+        <package.environment>dev</package.environment>
     </properties>
 
     <dependencyManagement>
-      <dependencies>
-        <dependency>
-          <groupId>com.sc</groupId>
-          <artifactId>common-dependencies</artifactId>
-          <version>1.0</version>
-          <type>pom</type>
-          <scope>import</scope>
-        </dependency>
-      </dependencies>
+        <dependencies>
+            <dependency>
+                <groupId>com.sc</groupId>
+                <artifactId>common-dependencies</artifactId>
+                <version>1.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <dependencies>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>io.projectreactor</groupId>
-        <artifactId>reactor-core</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>io.projectreactor</groupId>
-        <artifactId>reactor-test</artifactId>
-      </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
